@@ -1,35 +1,29 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace IO.Ably.ConsoleTest
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             MainAsync(args).GetAwaiter().GetResult();
         }
 
-        static async Task MainAsync(string[] args)
+        private static async Task MainAsync(string[] args)
         {
             IO.Ably.DefaultLogger.LoggerSink = new MyLogger();
             DefaultLogger.LogLevel = LogLevel.Debug;
             try
             {
-                //Rest.Test().Wait();
-                var client = Realtime.Test();
-                client.Connect(); 
-                var channel = client.Channels.Get("test");
-                await channel.AttachAsync();
-                DateTime start = DateTime.Now;
-                while (true)
-                {
-                    channel.Publish(new Random().Next(1000000000, 1000000000).ToString(), new Random().Next(1000000000, 1000000000).ToString());
-                    Thread.Sleep(1000);
-                    Console.WriteLine("Connected time: " + (DateTime.Now - start).TotalSeconds + " seconds");
-                }
+                var client = new AblyRealtime(new ClientOptions("<API Key Here>"));
+                var channel = client.Channels.Get(
+                    Guid.NewGuid().ToString(),
+                    new ChannelOptions(Convert.FromBase64String("dDGE8dYl8M9+uyUTIv0+ncs1hEa++HiNDu75Dyj4kmw="))
+                );
+
+                await channel.PublishAsync(new Message(null, "This is a test", Guid.NewGuid().ToString()));
 
                 Console.ReadLine();
                 ConsoleColor.Green.WriteLine("Success!");

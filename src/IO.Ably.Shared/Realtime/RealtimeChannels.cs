@@ -48,8 +48,13 @@ namespace IO.Ably.Realtime
             else
             {
                 if (options != null)
+                {
+                    Logger.Warning("Original Options - Raw: {0}", result.Options.ToJson());
                     result.Options = options;
+                    Logger.Warning("Overriden Options - Raw: {0}", result.Options.ToJson());
+                }
             }
+
             return result;
         }
 
